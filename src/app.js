@@ -19,6 +19,8 @@ const allowedOrigins = [
   "http://127.0.0.1:5173",
   "https://invoicehub.fun",
   "https://www.invoicehub.fun",
+  "https://www.codewithmission.site",
+  "https://codewithmission.site",
   "https://client-my-website-five.vercel.app", // ✅ trailing slash removed
 ];
 
