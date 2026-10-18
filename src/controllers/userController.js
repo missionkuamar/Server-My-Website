@@ -455,7 +455,7 @@ export const claimDailyBonus = async (req, res, next) => {
     }
 
     // Reward logic (with streak bonus)
-    const BASE_REWARD = 2;
+    const BASE_REWARD = 3;
     let bonusStars = 0;
 
     // ⬇️ Bonus on 7-day streak

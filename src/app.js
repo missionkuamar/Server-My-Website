@@ -18,6 +18,8 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://127.0.0.1:5173",
   "https://invoicehub.fun",
+  "https://www.codewithmission.site",
+  "https://codewithmission.site",
   "https://www.invoicehub.fun",
   "https://www.codewithmission.site",
   "https://codewithmission.site",
