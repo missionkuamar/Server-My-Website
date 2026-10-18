@@ -118,27 +118,27 @@ export const changePassword = async (req, res, next) => {
    GOOGLE LOGIN / REGISTER
    ============================================================ */
 export const googleAuth = async (req, res, next) => {
-  console.log("\n========== GOOGLE AUTH REQUEST ==========");
-  console.log("Timestamp:", new Date().toISOString());
-  console.log("Origin:", req.headers.origin);
-  console.log("GOOGLE_CLIENT_ID exists?", !!process.env.GOOGLE_CLIENT_ID);
-  console.log(
-    "GOOGLE_CLIENT_ID prefix:",
-    process.env.GOOGLE_CLIENT_ID?.substring(0, 20) + "..."
-  );
+  // console.log("\n========== GOOGLE AUTH REQUEST ==========");
+  // console.log("Timestamp:", new Date().toISOString());
+  // console.log("Origin:", req.headers.origin);
+  // console.log("GOOGLE_CLIENT_ID exists?", !!process.env.GOOGLE_CLIENT_ID);
+  // console.log(
+  //   "GOOGLE_CLIENT_ID prefix:",
+  //   process.env.GOOGLE_CLIENT_ID?.substring(0, 20) + "..."
+  // );
 
   try {
     const { credential } = req.body;
 
     if (!credential) {
-      console.log("❌ No credential in body");
+      // console.log("❌ No credential in body");
       throw new ApiError(400, "Google credential missing");
     }
 
-    console.log("✅ Credential received, length:", credential.length);
+    // console.log("✅ Credential received, length:", credential.length);
 
     // 1. Verify Google token
-    console.log("🔍 Verifying token with Google...");
+    // console.log("🔍 Verifying token with Google...");
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
@@ -147,13 +147,13 @@ export const googleAuth = async (req, res, next) => {
     const payload = ticket.getPayload();
     const { sub: googleId, email, name, picture } = payload;
 
-    console.log("✅ Token verified");
-    console.log("   → Email:", email);
-    console.log("   → Name:", name);
-    console.log("   → Google ID:", googleId);
+    // console.log("✅ Token verified");
+    // console.log("   → Email:", email);
+    // console.log("   → Name:", name);
+    // console.log("   → Google ID:", googleId);
 
     if (!email) {
-      console.log("❌ No email in Google payload");
+      // console.log("❌ No email in Google payload");
       throw new ApiError(400, "Email not found in Google account");
     }
 
@@ -162,8 +162,8 @@ export const googleAuth = async (req, res, next) => {
     let isNewUser = false;
 
     if (user) {
-      console.log("✅ Existing user found:", user._id);
-      console.log("   → Status:", user.status);
+      // console.log("✅ Existing user found:", user._id);
+      // console.log("   → Status:", user.status);
 
       // Block / ban check
       if (user.status === "banned") {
@@ -192,13 +192,13 @@ export const googleAuth = async (req, res, next) => {
 
       // Link Google if not linked
       if (!user.googleId) {
-        console.log("🔗 Linking Google account to existing user");
+        // console.log("🔗 Linking Google account to existing user");
         user.googleId = googleId;
         user.provider = "google";
       }
       if (!user.avatar && picture) user.avatar = picture;
     } else {
-      console.log("🆕 Creating new user...");
+      // console.log("🆕 Creating new user...");
       isNewUser = true;
       user = await User.create({
         name: name || email.split("@")[0],
@@ -209,7 +209,7 @@ export const googleAuth = async (req, res, next) => {
         role: "user",
         stars: 100,
       });
-      console.log("✅ New user created:", user._id);
+      // console.log("✅ New user created:", user._id);
     }
 
     // 3. Update login stats
@@ -219,8 +219,8 @@ export const googleAuth = async (req, res, next) => {
 
     // 4. Generate JWT
     const token = generateToken(user._id);
-    console.log("✅ JWT generated for user:", user._id);
-    console.log("========== GOOGLE AUTH SUCCESS ==========\n");
+    // console.log("✅ JWT generated for user:", user._id);
+    // console.log("========== GOOGLE AUTH SUCCESS ==========\n");
 
     res.json({
       success: true,
@@ -237,11 +237,11 @@ export const googleAuth = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.log("\n❌❌❌ GOOGLE AUTH ERROR ❌❌❌");
-    console.log("Error name:", error.name);
-    console.log("Error message:", error.message);
-    console.log("Error stack:", error.stack?.split("\n")[0]);
-    console.log("==========================================\n");
+    // console.log("\n❌❌❌ GOOGLE AUTH ERROR ❌❌❌");
+    // console.log("Error name:", error.name);
+    // console.log("Error message:", error.message);
+    // console.log("Error stack:", error.stack?.split("\n")[0]);
+    // console.log("==========================================\n");
 
     if (error.message?.includes("Token used too late")) {
       return next(

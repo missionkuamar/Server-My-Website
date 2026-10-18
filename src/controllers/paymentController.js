@@ -97,11 +97,11 @@ export const createOrder = async (req, res, next) => {
 // POST: Verify Payment & Credit Stars
 // ==========================================
 export const verifyPayment = async (req, res, next) => {
-  console.log("\n========== VERIFY PAYMENT CALLED ==========");
-  console.log("Body:", req.body);
-  console.log("User:", req.user?._id);
-  console.log("RAZORPAY_KEY_SECRET exists?", !!process.env.RAZORPAY_KEY_SECRET);
-  console.log("RAZORPAY_KEY_SECRET length:", process.env.RAZORPAY_KEY_SECRET?.length);
+  // console.log("\n========== VERIFY PAYMENT CALLED ==========");
+  // console.log("Body:", req.body);
+  // console.log("User:", req.user?._id);
+  // console.log("RAZORPAY_KEY_SECRET exists?", !!process.env.RAZORPAY_KEY_SECRET);
+  // console.log("RAZORPAY_KEY_SECRET length:", process.env.RAZORPAY_KEY_SECRET?.length);
 
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -110,32 +110,32 @@ export const verifyPayment = async (req, res, next) => {
       throw new ApiError(400, "Missing payment details");
     }
 
-    console.log("Step 1: Body validation passed ✅");
-    console.log("Order ID:", razorpay_order_id);
-    console.log("Payment ID:", razorpay_payment_id);
+    // console.log("Step 1: Body validation passed ✅");
+    // console.log("Order ID:", razorpay_order_id);
+    // console.log("Payment ID:", razorpay_payment_id);
 
-    // Check if crypto is imported
-    console.log("Step 2: crypto module check");
-    console.log("typeof crypto:", typeof crypto);
-    console.log("crypto.createHmac exists?", typeof crypto?.createHmac);
+    // // Check if crypto is imported
+    // console.log("Step 2: crypto module check");
+    // console.log("typeof crypto:", typeof crypto);
+    // console.log("crypto.createHmac exists?", typeof crypto?.createHmac);
 
     // Verify signature
     const body = razorpay_order_id + "|" + razorpay_payment_id;
-    console.log("Step 3: Creating signature for body:", body);
+    // console.log("Step 3: Creating signature for body:", body);
 
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(body.toString())
       .digest("hex");
 
-    console.log("Expected Signature:", expectedSignature);
-    console.log("Received Signature:", razorpay_signature);
-    console.log("Signature match?", expectedSignature === razorpay_signature);
+    // console.log("Expected Signature:", expectedSignature);
+    // console.log("Received Signature:", razorpay_signature);
+    // console.log("Signature match?", expectedSignature === razorpay_signature);
 
     const isValid = expectedSignature === razorpay_signature;
 
     if (!isValid) {
-      console.log("Step 4: Signature INVALID ❌");
+      // console.log("Step 4: Signature INVALID ❌");
       await Payment.findOneAndUpdate(
         { orderId: razorpay_order_id },
         { status: "failed" }
@@ -143,55 +143,55 @@ export const verifyPayment = async (req, res, next) => {
       throw new ApiError(400, "Invalid payment signature");
     }
 
-    console.log("Step 5: Signature valid ✅");
+    // console.log("Step 5: Signature valid ✅");
 
     // Find payment record
-    console.log("Step 6: Finding payment record...");
+    // console.log("Step 6: Finding payment record...");
     const payment = await Payment.findOne({ orderId: razorpay_order_id });
-    console.log("Payment found?", !!payment);
+    // console.log("Payment found?", !!payment);
     if (payment) {
-      console.log("Payment details:", {
-        _id: payment._id,
-        user: payment.user,
-        stars: payment.stars,
-        status: payment.status,
-        amount: payment.amount,
-      });
+      // console.log("Payment details:", {
+      //   _id: payment._id,
+      //   user: payment.user,
+      //   stars: payment.stars,
+      //   status: payment.status,
+      //   amount: payment.amount,
+      // });
     }
 
     if (!payment) throw new ApiError(404, "Order not found");
     if (payment.status === "paid") {
-      console.log("Step 7: Payment already processed ❌");
+      // console.log("Step 7: Payment already processed ❌");
       throw new ApiError(400, "Payment already processed");
     }
 
-    console.log("Step 7: Finding user...");
+    // console.log("Step 7: Finding user...");
     const user = await User.findById(payment.user);
-    console.log("User found?", !!user);
+    // console.log("User found?", !!user);
     if (user) {
-      console.log("User details:", {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        stars: user.stars,
-      });
+      // console.log("User details:", {
+      //   _id: user._id,
+      //   name: user.name,
+      //   email: user.email,
+      //   stars: user.stars,
+      // });
     }
 
     if (!user) throw new ApiError(404, "User not found");
 
-    console.log("Step 8: Crediting stars...");
+    // console.log("Step 8: Crediting stars...");
     user.stars += payment.stars;
     await user.save();
-    console.log("Stars credited ✅ New balance:", user.stars);
+    // console.log("Stars credited ✅ New balance:", user.stars);
 
-    console.log("Step 9: Updating payment status...");
+    // console.log("Step 9: Updating payment status...");
     payment.status = "paid";
     payment.paymentId = razorpay_payment_id;
     payment.signature = razorpay_signature;
     await payment.save();
-    console.log("Payment updated ✅");
+    // console.log("Payment updated ✅");
 
-    console.log("========== VERIFY PAYMENT SUCCESS ==========\n");
+    // console.log("========== VERIFY PAYMENT SUCCESS ==========\n");
 
     res.json({
       success: true,
@@ -200,11 +200,11 @@ export const verifyPayment = async (req, res, next) => {
       newBalance: user.stars,
     });
   } catch (error) {
-    console.log("\n❌❌❌ VERIFY PAYMENT ERROR ❌❌❌");
-    console.log("Error name:", error.name);
-    console.log("Error message:", error.message);
-    console.log("Error stack:", error.stack);
-    console.log("===========================================\n");
+    // console.log("\n❌❌❌ VERIFY PAYMENT ERROR ❌❌❌");
+    // console.log("Error name:", error.name);
+    // console.log("Error message:", error.message);
+    // console.log("Error stack:", error.stack);
+    // console.log("===========================================\n");
     next(error);
   }
 };
